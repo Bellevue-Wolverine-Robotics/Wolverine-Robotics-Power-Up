@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class Climb extends Command {
+public class HandStow extends Command {
 
-    public Climb() {
+    public HandStow() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.climber);
+        // eg. requires(chassis);
     }
 
     // Called just before this Command runs the first time
@@ -20,29 +20,7 @@ public class Climb extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if(Robot.oi.isOperatorButtonDown(8)) // Up
-    	{
-    		Robot.climber.setBothMotors(-1.0);
-    	}
-    	else if(Robot.oi.isOperatorButtonDown(7)) // Down 
-    	{
-    		Robot.climber.setBothMotors(1.0);
-    	}
-    	else 
-    	{
-    		Robot.climber.setBothMotors(0.0);
-    	}
-    	
-    	
-    	// Servo Hook logic
-    	if(Robot.oi.isOperatorButtonDown(4)) // Release
-    	{
-    		Robot.climber.releaseHook();
-    	}
-    	else if(Robot.oi.isOperatorButtonDown(6)) // Retract //DONT THINK WE NEED THIS
-    	{
-    		Robot.climber.lockHook();
-    	}
+    	Robot.hand.setWrist(0.05);
     }
 
     // Make this return true when this Command no longer needs to run execute()

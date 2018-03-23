@@ -17,7 +17,8 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 /**
  *
  */
-public class DriveTrain extends Subsystem {
+public class DriveTrain extends Subsystem
+{
 
 	private DifferentialDrive drive;
 
@@ -28,7 +29,8 @@ public class DriveTrain extends Subsystem {
 
 	public WPI_TalonSRX r0, r1, l0, l1;
 
-	public void initDefaultCommand() {
+	public void initDefaultCommand()
+	{
 		// Set the default command for a subsystem here.
 		setDefaultCommand(new JoystickDrive());
 	}
@@ -45,14 +47,14 @@ public class DriveTrain extends Subsystem {
 		// Set slaves r1 and l1 to follow masters r0 and l0
 		
 		setUpEncoders();
-		// 683 u/100ms, 745u/ 100ms 24% output
-		// 0.358724, 0.328870
-		l0.config_kF(0, 0.328870, 0);
-		r0.config_kF(0, 0.358724, 0);
-		l0.config_kP(0, 10./4096, 0);
-		r0.config_kP(0, 10./4096, 0);
-		l0.config_kD(0, 100000./4096, 0);
-		r0.config_kD(0, 100000./4096, 0);
+//		//683 u/100ms, 745u/ 100ms 24% output
+//		//0.358724, 0.328870
+//		l0.config_kF(0, 0.328870, 0);
+//		r0.config_kF(0, 0.358724, 0);
+//		l0.config_kP(0, 10./4096, 0);
+//		r0.config_kP(0, 10./4096, 0);
+//		l0.config_kD(0, 100000./4096, 0);
+//		r0.config_kD(0, 100000./4096, 0);
 		
 		this.r = new SpeedControllerGroup(r0, r1);
 		this.l = new SpeedControllerGroup(l0, l1);
@@ -65,7 +67,8 @@ public class DriveTrain extends Subsystem {
 		this.drive.setSafetyEnabled(false);
 	}
 
-	private void setUpEncoders() {
+	private void setUpEncoders()
+	{
 		r0.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		r0.setSensorPhase(false);
 		r0.setSelectedSensorPosition(0, 0, 0);
@@ -75,58 +78,71 @@ public class DriveTrain extends Subsystem {
 	}
 
 	// Drive Methods
-	public void arcade(double moveValue, double rotateValue) {
+	public void arcade(double moveValue, double rotateValue)
+	{
 		this.drive.arcadeDrive(moveValue, rotateValue);
 	}
 
-	public void tank(double leftMoveValue, double rightMoveValue) {
+	public void tank(double leftMoveValue, double rightMoveValue)
+	{
 		this.drive.tankDrive(leftMoveValue, rightMoveValue);
 	}
 
-	public void stop() {
+	public void stop()
+	{
 		arcade(0.0, 0.0);
 	}
 
 	// ACCESSORS
-	public double gyroRate() {
+	public double gyroRate()
+	{
 		return this.g.getRate();
 	}
 
-	public void gyroCalibrate() {
+	public void gyroCalibrate()
+	{
 		this.g.calibrate();
 	}
 
-	public double getLeftVelocity() {
+	public double getLeftVelocity()
+	{
 		return this.l0.getSelectedSensorVelocity(0);
 	}
 
-	public double getRightVelocity() {
+	public double getRightVelocity()
+	{
 		return this.r0.getSelectedSensorVelocity(0);
 	}
 
-	public double getLeftPosition() {
+	public double getLeftPosition()
+	{
 		return this.l0.getSelectedSensorPosition(0);
 	}
 
-	public double getRightPosition() {
+	public double getRightPosition()
+	{
 		return this.r0.getSelectedSensorPosition(0);
 	}
 
-	public void gyroPTurn(double targetAngle) 
+	public void gyroPTurn(double targetAngle)
 	{
 		double turn = targetAngle - g.getAngle();
 		final double maximumTurnValue = 0.6;
 		final double kPTurn = 0.07;
-		if ((turn * kPTurn) > maximumTurnValue) {
+		if ((turn * kPTurn) > maximumTurnValue)
+		{
 			this.arcade(0.0, maximumTurnValue);
-		} else if ((turn * kPTurn) < -maximumTurnValue) {
+		} else if ((turn * kPTurn) < -maximumTurnValue)
+		{
 			this.arcade(0.0, -maximumTurnValue);
-		} else {
+		} else
+		{
 			this.arcade(0.0, turn * kPTurn);
 		}
 
 	}
-	public boolean angleWithinTolerance(double targetAngle) 
+
+	public boolean angleWithinTolerance(double targetAngle)
 	{
 		final double tolerance = 3.0;
 		DriverStation.reportWarning("" + g.getAngle(), false);
