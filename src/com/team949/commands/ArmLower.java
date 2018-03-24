@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class ArmLower extends Command {
 
+	// TODO: Tune
 	private final double kArmInitial = 0.2;
 	private final double kArmLowerMax = 0.4;
 	private final double kArmLowStall = 0.1;

@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.io.IOException;
 
 import com.team949.auto.HardArmMove;
-import com.team949.auto.HardMove;
+import com.team949.auto.HardMoveForward;
 import com.team949.auto.HardTurn;
 import com.team949.commands.ArmLower;
 import com.team949.commands.ArmRaise;
@@ -33,8 +33,7 @@ import com.team949.subsystems.Hand;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends TimedRobot
-{
+public class Robot extends TimedRobot {
 	// Please keep these as public unless you have a good reason.
 	public static final DriveTrain driveTrain = new DriveTrain();
 	public static final Hand hand = new Hand();
@@ -51,8 +50,7 @@ public class Robot extends TimedRobot
 	 * used for any initialization code.
 	 */
 	@Override
-	public void robotInit()
-	{
+	public void robotInit() {
 		oi = new OI();
 
 		UsbCamera driveCamera = CameraServer.getInstance().startAutomaticCapture(0);
@@ -86,15 +84,13 @@ public class Robot extends TimedRobot
 	 * the robot is disabled.
 	 */
 	@Override
-	public void disabledInit()
-	{
+	public void disabledInit() {
 		Robot.driveTrain.gyroCalibrate(); // TODO: Calibration happens on each
 											// disable. Could be dangerous.
 	}
 
 	@Override
-	public void disabledPeriodic()
-	{
+	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 	}
 
@@ -110,8 +106,7 @@ public class Robot extends TimedRobot
 	 * to the switch structure below with additional strings & commands.
 	 */
 	@Override
-	public void autonomousInit()
-	{
+	public void autonomousInit() {
 		// char startingPosition = startingPositionChooser.getSelected();
 		// String targetScoring = targetScoringChooser.getSelected();
 		// String gameData =
@@ -168,14 +163,12 @@ public class Robot extends TimedRobot
 	 * /** This function is called periodically during autonomous
 	 */
 	@Override
-	public void autonomousPeriodic()
-	{
+	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
 	}
 
 	@Override
-	public void teleopInit()
-	{
+	public void teleopInit() {
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
@@ -202,8 +195,14 @@ public class Robot extends TimedRobot
 	private final static double Z_NERF = 0.6;
 
 	@Override
-	public void teleopPeriodic()
-	{		
+	public void teleopPeriodic() {
+		SmartDashboard.putNumber("ArmAngle", Math.toDegrees(arm.getAngle()));
+		SmartDashboard.putNumber("WristAngle", Math.toDegrees(hand.getAngle()));
+
+		SmartDashboard.putNumber("PosL", driveTrain.getLeftPosition());
+		SmartDashboard.putNumber("PosR", driveTrain.getRightPosition());
+		SmartDashboard.putNumber("VelL", driveTrain.getLeftVelocity());
+		SmartDashboard.putNumber("VelR", driveTrain.getRightVelocity());
 		Joystick drive = oi.driveStick, op = oi.operatorStick;
 		// drivestick
 		// drivetrain
@@ -214,24 +213,21 @@ public class Robot extends TimedRobot
 				: (Math.signum(yInput) * ((Math.abs(yInput) - Y_THRESHOLD) / (1 - Y_THRESHOLD))));
 		zInput = Z_NERF * (Math.abs(zInput) < Z_THRESHOLD ? 0
 				: (Math.signum(zInput) * ((Math.abs(zInput) - Z_THRESHOLD) / (1 - Z_THRESHOLD))));
-		driveTrain.arcade(yInput, zInput);	
+		driveTrain.arcade(yInput, zInput);
 		// arm
-		if (drive.getRawButtonPressed(10))
-		{
+		if (drive.getRawButtonPressed(10)) {
 			armL.cancel();
 			armR.cancel();
 			armManual = true;
 		}
 		if (drive.getRawButtonPressed(9))
 			armManual = false;
-		if (drive.getRawButtonPressed(11))
-		{
+		if (drive.getRawButtonPressed(11)) {
 			armManual = false;
 			armR.cancel();
 			armL.start();
 		}
-		if (drive.getRawButtonPressed(12))
-		{
+		if (drive.getRawButtonPressed(12)) {
 			armManual = false;
 			armL.cancel();
 			armR.start();
@@ -241,13 +237,11 @@ public class Robot extends TimedRobot
 
 		// operator stick
 		// wrist
-		if (op.getRawButtonPressed(8))
-		{
+		if (op.getRawButtonPressed(8)) {
 			wristStow.cancel();
 			wristManual = true;
 		}
-		if (drive.getRawButtonPressed(7))
-		{
+		if (drive.getRawButtonPressed(7)) {
 			wristManual = false;
 			wristStow.start();
 		}
@@ -271,8 +265,7 @@ public class Robot extends TimedRobot
 	 * This function is called periodically during test mode
 	 */
 	@Override
-	public void testPeriodic()
-	{
+	public void testPeriodic() {
 
 	}
 }

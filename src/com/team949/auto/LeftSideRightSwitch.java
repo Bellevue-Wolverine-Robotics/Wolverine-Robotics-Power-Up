@@ -9,7 +9,7 @@ public class LeftSideRightSwitch extends CommandGroup {
 
     public LeftSideRightSwitch() {
     	addSequential(new HardTurn(1.0, 90));
-    	addSequential(new HardMove(1.0));
+    	addSequential(new HardMoveForward(1.0));
     	addSequential(new HardTurn(1.0, 0.0));
     	addSequential(new RightSideRightSwitch());
         // Add Commands here:

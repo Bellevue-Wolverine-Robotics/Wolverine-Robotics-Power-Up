@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class HandLower extends Command {
 
+	// TODO: Tune
 	private final double kHandLowerLinear = 0.4;
 	private final double kHandLowerDamp = 0.1;
 	private final double switchAngle = Math.toRadians(75);

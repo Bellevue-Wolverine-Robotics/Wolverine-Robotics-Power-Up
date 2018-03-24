@@ -21,7 +21,7 @@ public class Hand extends Subsystem {
 	private Compressor compressor;
 	private DoubleSolenoid handRotator;
 
-	public static final double startingAngle = -Arm.startingAngle + 90; /* TODO: Replace with actual hand resting angle*/
+	public static final double startingAngle = -Arm.startingAngle + 93;
 	
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
@@ -98,6 +98,10 @@ public class Hand extends Subsystem {
 		this.wristMotor.set(rate);
 	}
 
+	/**
+	 * 
+	 * @return hand angle relative to ground in radians
+	 */
 	public double getAngle()
 	{
 		return Robot.arm.getAngle() + Math.toRadians(getEncoderPosition() * 360 / 4096 + startingAngle);

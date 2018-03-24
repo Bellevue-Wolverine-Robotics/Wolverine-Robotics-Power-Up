@@ -16,7 +16,7 @@ public class Arm extends Subsystem {
 
 	// Initialize your subsystem here
 	private WPI_TalonSRX armMotor;
-	public static final double startingAngle = -45; /* TODO: Replace with actual arm resting angle*/
+	public static final double startingAngle = -50;
 
 	public Arm() {
 		armMotor = new WPI_TalonSRX(RobotMap.armMotor);
@@ -57,11 +57,11 @@ public class Arm extends Subsystem {
 	}
 	
 	public boolean raised() {
-		return getEncoderPosition() > (130. / 360 * 4096); // 130 deg elevation * 4096 units/rev
+		return getAngle() > Math.toRadians(175); // 130 deg elevation * 4096 units/rev
 	}
 	
 	public boolean lowered() {
-		return getEncoderPosition() < (5. / 360 * 4096);
+		return getAngle() < Math.toRadians(5);
 	}
 
 }
