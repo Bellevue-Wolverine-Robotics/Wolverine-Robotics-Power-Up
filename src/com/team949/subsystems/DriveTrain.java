@@ -5,11 +5,11 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team949.Robot;
 import com.team949.RobotMap;
-import com.team949.commands.JoystickDrive;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
@@ -30,7 +30,7 @@ public class DriveTrain extends Subsystem {
 
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
-		setDefaultCommand(new JoystickDrive());
+
 	}
 
 	public DriveTrain() {
@@ -43,17 +43,17 @@ public class DriveTrain extends Subsystem {
 		this.l1 = new WPI_TalonSRX(RobotMap.leftDriveMotor2);
 
 		// Set slaves r1 and l1 to follow masters r0 and l0
-		
+
 		setUpEncoders();
-		// 683 u/100ms, 745u/ 100ms 24% output
-		// 0.358724, 0.328870
-		l0.config_kF(0, 0.328870, 0);
-		r0.config_kF(0, 0.358724, 0);
-		l0.config_kP(0, 10./4096, 0);
-		r0.config_kP(0, 10./4096, 0);
-		l0.config_kD(0, 100000./4096, 0);
-		r0.config_kD(0, 100000./4096, 0);
-		
+		// //683 u/100ms, 745u/ 100ms 24% output
+		// //0.358724, 0.328870
+		// l0.config_kF(0, 0.328870, 0);
+		// r0.config_kF(0, 0.358724, 0);
+		// l0.config_kP(0, 10./4096, 0);
+		// r0.config_kP(0, 10./4096, 0);
+		// l0.config_kD(0, 100000./4096, 0);
+		// r0.config_kD(0, 100000./4096, 0);
+
 		this.r = new SpeedControllerGroup(r0, r1);
 		this.l = new SpeedControllerGroup(l0, l1);
 
@@ -77,6 +77,31 @@ public class DriveTrain extends Subsystem {
 	// Drive Methods
 	public void arcade(double moveValue, double rotateValue) {
 		this.drive.arcadeDrive(moveValue, rotateValue);
+	}
+
+	// kd not implemented
+	/* TODO: measure Kv */
+	private final double kp = 10. / 40, ki = 0.001 / 50, kd = 0, kv = 0.34 / 4096 * 6 * Math.PI;
+	private double accL = 0, accR = 0;// accumulation
+	private double prevT = 0, prevErrL = 0, prevErrR = 0;
+
+	public void startPID() {
+		accL = 0;
+		accR = 0;
+		prevT = Timer.getFPGATimestamp();
+	}
+
+	public void setVelocity(double velL, double velR) {
+		double errL = velL - getLeftVelocity();
+		accL += errL * ki;
+		double errR = velR - getRightVelocity();
+		accR += errR * ki;
+		double time = Timer.getFPGATimestamp();
+		tank(errL * kp + velL * kv + accL + (prevErrL - errL) / (time - prevT) * kd,
+				errR * kp + velR * kv + accR + (prevErrR - errR) / (time - prevT) * kd);
+		prevT = time;
+		prevErrL = errL;
+		prevErrR = errR;
 	}
 
 	public void tank(double leftMoveValue, double rightMoveValue) {
@@ -112,8 +137,7 @@ public class DriveTrain extends Subsystem {
 		return this.r0.getSelectedSensorPosition(0);
 	}
 
-	public void gyroPTurn(double targetAngle) 
-	{
+	public void gyroPTurn(double targetAngle) {
 		double turn = targetAngle - g.getAngle();
 		final double maximumTurnValue = 0.6;
 		final double kPTurn = 0.07;
@@ -126,8 +150,8 @@ public class DriveTrain extends Subsystem {
 		}
 
 	}
-	public boolean angleWithinTolerance(double targetAngle) 
-	{
+
+	public boolean angleWithinTolerance(double targetAngle) {
 		final double tolerance = 3.0;
 		DriverStation.reportWarning("" + g.getAngle(), false);
 		return (Math.abs(targetAngle - g.getAngle()) <= tolerance) && (Math.abs(g.getRate()) < 1);

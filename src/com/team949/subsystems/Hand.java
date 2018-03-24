@@ -1,8 +1,9 @@
 package com.team949.subsystems;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.team949.Robot;
 import com.team949.RobotMap;
-import com.team949.commands.PickupControl;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -12,17 +13,18 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class Hand extends Subsystem {
+	
 	private WPI_TalonSRX rightPickupMotor;
 	private WPI_TalonSRX leftPickupMotor;
-
 	private WPI_TalonSRX wristMotor;
 
 	private Compressor compressor;
 	private DoubleSolenoid handRotator;
 
+	public static final double startingAngle = -Arm.startingAngle + 93;
+	
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
-		setDefaultCommand(new PickupControl());
 	}
 
 	public Hand() {
@@ -36,10 +38,22 @@ public class Hand extends Subsystem {
 		rightPickupMotor.setInverted(true);
 		leftPickupMotor.setInverted(false);
 		compressor.setClosedLoopControl(true);
+		
+		wristMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		wristMotor.setSensorPhase(false);
+		wristMotor.setSelectedSensorPosition(0, 0, 0);
 	}
 	// Put methods for controlling this subsystem
 	// here. Call these from Commands.
 
+	public double getEncoderPosition() {
+		return wristMotor.getSelectedSensorPosition(0);
+	}
+
+	public double getEncoderVelocity() {
+		return wristMotor.getSelectedSensorVelocity(0);
+	}
+	
 	public void open() {
 		handRotator.set(DoubleSolenoid.Value.kForward);
 	}
@@ -84,4 +98,13 @@ public class Hand extends Subsystem {
 		this.wristMotor.set(rate);
 	}
 
+	/**
+	 * 
+	 * @return hand angle relative to ground in radians
+	 */
+	public double getAngle()
+	{
+		return Robot.arm.getAngle() + Math.toRadians(getEncoderPosition() * 360 / 4096 + startingAngle);
+	}
+	
 }

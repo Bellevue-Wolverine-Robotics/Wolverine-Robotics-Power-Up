@@ -1,17 +1,23 @@
 package com.team949.commands;
 
 import com.team949.Robot;
+import com.team949.subsystems.Arm;
 
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class Climb extends Command {
+public class ArmLower extends Command {
 
-    public Climb() {
+	// TODO: Tune
+	private final double kArmInitial = 0.2;
+	private final double kArmLowerMax = 0.4;
+	private final double kArmLowStall = 0.1;
+
+	public ArmLower() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.climber);
+        // eg. requires(chassis);
     }
 
     // Called just before this Command runs the first time
@@ -20,29 +26,15 @@ public class Climb extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if(Robot.oi.isOperatorButtonDown(8)) // Up
-    	{
-    		Robot.climber.setBothMotors(-1.0);
-    	}
-    	else if(Robot.oi.isOperatorButtonDown(7)) // Down 
-    	{
-    		Robot.climber.setBothMotors(1.0);
-    	}
-    	else 
-    	{
-    		Robot.climber.setBothMotors(0.0);
-    	}
-    	
-    	
-    	// Servo Hook logic
-    	if(Robot.oi.isOperatorButtonDown(4)) // Release
-    	{
-    		Robot.climber.releaseHook();
-    	}
-    	else if(Robot.oi.isOperatorButtonDown(6)) // Retract //DONT THINK WE NEED THIS
-    	{
-    		Robot.climber.lockHook();
-    	}
+    	double angle = Robot.arm.getAngle();
+    	double out = 0;
+    	if (angle > Math.toRadians(30))
+    		out = -kArmInitial;
+    	else if (angle > Math.toRadians(5 + Arm.startingAngle) && angle < Math.toRadians(30))
+    		out = Math.cos(angle) * kArmLowerMax;
+    	else if (angle < Math.toRadians(5 + Arm.startingAngle))
+    		out = -kArmLowStall;
+    	Robot.arm.move(out);
     }
 
     // Make this return true when this Command no longer needs to run execute()

@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team949.Robot;
 import com.team949.RobotMap;
-import com.team949.commands.JoyStickArm;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
@@ -17,6 +16,7 @@ public class Arm extends Subsystem {
 
 	// Initialize your subsystem here
 	private WPI_TalonSRX armMotor;
+	public static final double startingAngle = -50;
 
 	public Arm() {
 		armMotor = new WPI_TalonSRX(RobotMap.armMotor);
@@ -27,7 +27,7 @@ public class Arm extends Subsystem {
 	}
 
 	public void initDefaultCommand() {
-		setDefaultCommand(new JoyStickArm());
+		setDefaultCommand(null);
 	}
 
 	public double getEncoderPosition() {
@@ -36,6 +36,14 @@ public class Arm extends Subsystem {
 
 	public double getEncoderVelocity() {
 		return armMotor.getSelectedSensorVelocity(0);
+	}
+	
+	/**
+	 * 
+	 * @return angle of arm, 0 is parallel to ground, in radians
+	 */
+	public double getAngle() {
+		return Math.toRadians(getEncoderPosition() / 4096 * 360 + startingAngle);
 	}
 
 	/**
@@ -46,6 +54,14 @@ public class Arm extends Subsystem {
 	 */
 	public void move(double moveValue) {
 		armMotor.set(moveValue);
+	}
+	
+	public boolean raised() {
+		return getAngle() > Math.toRadians(175); // 130 deg elevation * 4096 units/rev
+	}
+	
+	public boolean lowered() {
+		return getAngle() < Math.toRadians(5);
 	}
 
 }
