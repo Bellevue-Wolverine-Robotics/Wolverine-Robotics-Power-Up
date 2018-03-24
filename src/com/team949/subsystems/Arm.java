@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team949.Robot;
 import com.team949.RobotMap;
-import com.team949.commands.JoyStickArm;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
@@ -28,7 +27,7 @@ public class Arm extends Subsystem {
 	}
 
 	public void initDefaultCommand() {
-		setDefaultCommand(new JoyStickArm());
+		setDefaultCommand(null);
 	}
 
 	public double getEncoderPosition() {

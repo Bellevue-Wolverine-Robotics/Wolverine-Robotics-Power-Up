@@ -2,8 +2,6 @@ package com.team949.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team949.RobotMap;
-import com.team949.commands.Climb;
-
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -18,7 +16,7 @@ public class Climber extends Subsystem {
 	private Servo hookLock;
 	
 	public void initDefaultCommand() {
-		setDefaultCommand(new Climb());
+		
 	}
 
 	public Climber() {
