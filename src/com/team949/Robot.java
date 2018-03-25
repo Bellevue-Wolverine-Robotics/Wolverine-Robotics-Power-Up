@@ -20,7 +20,9 @@ import com.team949.auto.HardMoveForward;
 import com.team949.auto.HardTurn;
 import com.team949.commands.ArmLower;
 import com.team949.commands.ArmRaise;
+import com.team949.commands.HandLower;
 import com.team949.commands.HandStow;
+import com.team949.commands.ShitForward;
 import com.team949.subsystems.Arm;
 import com.team949.subsystems.Climber;
 import com.team949.subsystems.DriveTrain;
@@ -53,14 +55,15 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		oi = new OI();
 
-		UsbCamera driveCamera = CameraServer.getInstance().startAutomaticCapture(0);
+		UsbCamera driveCamera = CameraServer.getInstance().startAutomaticCapture(1);
 
 		driveCamera.setFPS(20);
 		driveCamera.setResolution(320, 240);
 
-		UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture(1);
-		armCamera.setFPS(20);
-		armCamera.setResolution(320, 240);
+		// UsbCamera armCamera =
+		// CameraServer.getInstance().startAutomaticCapture(1);
+		// armCamera.setFPS(20);
+		// armCamera.setResolution(320, 240);
 
 		this.startingPositionChooser.addDefault("Left", 'L');
 		this.startingPositionChooser.addObject("Middle", 'M');
@@ -85,8 +88,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		Robot.driveTrain.gyroCalibrate(); // TODO: Calibration happens on each
-											// disable. Could be dangerous.
+		// Robot.driveTrain.gyroCalibrate(); // TODO: Calibration happens on
+		// each
+		// disable. Could be dangerous.
 	}
 
 	@Override
@@ -107,22 +111,24 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		// char startingPosition = startingPositionChooser.getSelected();
-		// String targetScoring = targetScoringChooser.getSelected();
-		// String gameData =
-		// DriverStation.getInstance().getGameSpecificMessage();
-		// autonomousCommand = autonomousSwitchLogic(startingPosition,
-		// targetScoring, gameData);
+		char startingPosition = startingPositionChooser.getSelected();
+		String targetScoring = targetScoringChooser.getSelected();
+		String gameData = DriverStation.getInstance().getGameSpecificMessage();
 
 		// String autoSelected = SmartDashboard.getString("Auto Selector",
 		// "Default");
-		// switch(autoSelected) {
-		// case "My Auto": autonomousCommand = new MyAutoCommand();
+		// switch (autoSelected) {
+		// case "My Auto":
+		// autonomousCommand = new HardMoveForward(10);
 		// break;
 		// case "Default Auto":
 		// default:
-		// autonomousCommand = new ExampleCommand(); break; }
+		// autonomousCommand = new HardMoveForward(10);
+		// break;
+		// }
 		// schedule the autonomous command (example)
+
+		autonomousCommand = new ShitForward(4);
 		if (autonomousCommand != null)
 			autonomousCommand.start();
 	}
@@ -164,6 +170,13 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+
+		SmartDashboard.putNumber("ArmAngle", Math.toDegrees(arm.getAngle()));
+		SmartDashboard.putNumber("WristAngle", Math.toDegrees(hand.getAngle()));
+		SmartDashboard.putNumber("PosL", driveTrain.getLeftPosition());
+		SmartDashboard.putNumber("PosR", driveTrain.getRightPosition());
+		SmartDashboard.putNumber("VelL", driveTrain.getLeftVelocity());
+		SmartDashboard.putNumber("VelR", driveTrain.getRightVelocity());
 		Scheduler.getInstance().run();
 	}
 
@@ -190,31 +203,35 @@ public class Robot extends TimedRobot {
 
 	private final static double Y_THRESHOLD = 0.3;
 	private final static double Z_THRESHOLD = 0.5;
+	private final static double H_THRESHOLD = 0.3;
 
-	private final static double Y_NERF = 1.0;
-	private final static double Z_NERF = 0.6;
+	private final static double Y_NERF = 1;
+	private static double Z_NERF = 0.8;
+	private final static double H_NERF = 0.7;
 
 	@Override
 	public void teleopPeriodic() {
 		SmartDashboard.putNumber("ArmAngle", Math.toDegrees(arm.getAngle()));
 		SmartDashboard.putNumber("WristAngle", Math.toDegrees(hand.getAngle()));
-
 		SmartDashboard.putNumber("PosL", driveTrain.getLeftPosition());
 		SmartDashboard.putNumber("PosR", driveTrain.getRightPosition());
 		SmartDashboard.putNumber("VelL", driveTrain.getLeftVelocity());
 		SmartDashboard.putNumber("VelR", driveTrain.getRightVelocity());
+
 		Joystick drive = oi.driveStick, op = oi.operatorStick;
 		// drivestick
 		// drivetrain
 		double yInput = drive.getY();
 		double zInput = drive.getZ();
 
-		yInput = Y_NERF * (Math.abs(yInput) < Y_THRESHOLD ? 0
-				: (Math.signum(yInput) * ((Math.abs(yInput) - Y_THRESHOLD) / (1 - Y_THRESHOLD))));
-		zInput = Z_NERF * (Math.abs(zInput) < Z_THRESHOLD ? 0
-				: (Math.signum(zInput) * ((Math.abs(zInput) - Z_THRESHOLD) / (1 - Z_THRESHOLD))));
+		yInput = Y_NERF * (Math.abs(yInput) < Y_THRESHOLD ? 0 : -yInput);
+		zInput = Z_NERF * (Math.abs(zInput) < Z_THRESHOLD ? 0 : -zInput);
 		driveTrain.arcade(yInput, zInput);
 		// arm
+		if (drive.getRawButtonPressed(7))
+			Z_NERF = 0.5;
+		if (drive.getRawButtonPressed(8))
+			Z_NERF = 0.8;
 		if (drive.getRawButtonPressed(10)) {
 			armL.cancel();
 			armR.cancel();
@@ -233,32 +250,38 @@ public class Robot extends TimedRobot {
 			armR.start();
 		}
 		if (armManual)
-			arm.move(drive.getThrottle());
+			// arm.move(drive.getThrottle());
+			arm.move(0);
+		// System.out.println(yInput * Math.cos(arm.getAngle()));
 
 		// operator stick
 		// wrist
-		if (op.getRawButtonPressed(8)) {
+		double hInput = op.getY();
+		hInput = H_NERF * (Math.abs(hInput) < H_THRESHOLD ? 0 : hInput);
+		if (op.getRawButtonPressed(10)) {
 			wristStow.cancel();
 			wristManual = true;
 		}
-		if (drive.getRawButtonPressed(7)) {
+		if (op.getRawButtonPressed(9)) {
 			wristManual = false;
 			wristStow.start();
 		}
+
 		if (wristManual)
-			hand.setWrist(op.getY());
+			hand.setWrist(hInput);
 		// pneumatics
 		if (op.getRawButtonPressed(11))
 			hand.open();
 		if (op.getRawButtonPressed(12))
 			hand.close();
 		// shoot
-		if (op.getRawButton(10))
-			hand.setIntake(0.5);
-		else if (op.getRawButton(9))
-			hand.setIntake(-0.5);
+		if (op.getRawButton(2))
+			hand.setIntake(0.8);
+		else if (op.getRawButton(1))
+			hand.setIntake(-1);
 		else
 			hand.setIntake(0);
+		Scheduler.getInstance().run();
 	}
 
 	/**
@@ -266,6 +289,12 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		SmartDashboard.putNumber("ArmAngle", Math.toDegrees(arm.getAngle()));
+		SmartDashboard.putNumber("WristAngle", Math.toDegrees(hand.getAngle()));
+		SmartDashboard.putNumber("PosL", driveTrain.getLeftPosition());
+		SmartDashboard.putNumber("PosR", driveTrain.getRightPosition());
+		SmartDashboard.putNumber("VelL", driveTrain.getLeftVelocity());
+		SmartDashboard.putNumber("VelR", driveTrain.getRightVelocity());
 
 	}
 }

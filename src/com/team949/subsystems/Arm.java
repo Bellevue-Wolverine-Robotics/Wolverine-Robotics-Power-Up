@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class Arm extends Subsystem {
-
+	private double offset = 135. / 131;
+	private double gearReduction = 30. / 54 * 1 / 2;
 	// Initialize your subsystem here
 	private WPI_TalonSRX armMotor;
 	public static final double startingAngle = -50;
@@ -37,13 +38,13 @@ public class Arm extends Subsystem {
 	public double getEncoderVelocity() {
 		return armMotor.getSelectedSensorVelocity(0);
 	}
-	
+
 	/**
 	 * 
 	 * @return angle of arm, 0 is parallel to ground, in radians
 	 */
 	public double getAngle() {
-		return Math.toRadians(getEncoderPosition() / 4096 * 360 + startingAngle);
+		return Math.toRadians(getEncoderPosition() * gearReduction * offset / 4096 * 360 + startingAngle);
 	}
 
 	/**
@@ -53,13 +54,14 @@ public class Arm extends Subsystem {
 	 *            -1.0 to 1.0
 	 */
 	public void move(double moveValue) {
-		armMotor.set(moveValue);
+		armMotor.set(-moveValue);
 	}
-	
+
 	public boolean raised() {
-		return getAngle() > Math.toRadians(175); // 130 deg elevation * 4096 units/rev
+		return getAngle() > Math.toRadians(175); // 130 deg elevation * 4096
+													// units/rev
 	}
-	
+
 	public boolean lowered() {
 		return getAngle() < Math.toRadians(5);
 	}

@@ -70,13 +70,13 @@ public class DriveTrain extends Subsystem {
 		r0.setSensorPhase(false);
 		r0.setSelectedSensorPosition(0, 0, 0);
 		l0.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		l0.setSensorPhase(false);
+		l0.setSensorPhase(true);
 		l0.setSelectedSensorPosition(0, 0, 0);
 	}
 
 	// Drive Methods
 	public void arcade(double moveValue, double rotateValue) {
-		this.drive.arcadeDrive(moveValue, rotateValue);
+		tank(moveValue - rotateValue, moveValue + rotateValue);
 	}
 
 	// kd not implemented
@@ -122,19 +122,19 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public double getLeftVelocity() {
-		return this.l0.getSelectedSensorVelocity(0);
+		return this.l0.getSelectedSensorVelocity(0) * 6 * Math.PI / 4096;
 	}
 
 	public double getRightVelocity() {
-		return this.r0.getSelectedSensorVelocity(0);
+		return this.r0.getSelectedSensorVelocity(0) * 6 * Math.PI / 4096;
 	}
 
 	public double getLeftPosition() {
-		return this.l0.getSelectedSensorPosition(0);
+		return this.l0.getSelectedSensorPosition(0) * 6 * Math.PI / 4096;
 	}
 
 	public double getRightPosition() {
-		return this.r0.getSelectedSensorPosition(0);
+		return this.r0.getSelectedSensorPosition(0) * 6 * Math.PI / 4096;
 	}
 
 	public void gyroPTurn(double targetAngle) {

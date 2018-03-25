@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class Hand extends Subsystem {
-	
+	private double gearReduction = 15. / 30;
 	private WPI_TalonSRX rightPickupMotor;
 	private WPI_TalonSRX leftPickupMotor;
 	private WPI_TalonSRX wristMotor;
@@ -21,8 +21,8 @@ public class Hand extends Subsystem {
 	private Compressor compressor;
 	private DoubleSolenoid handRotator;
 
-	public static final double startingAngle = -Arm.startingAngle + 93;
-	
+	public static final double startingAngle = -Arm.startingAngle + 93;//
+
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
 	}
@@ -32,15 +32,17 @@ public class Hand extends Subsystem {
 		this.leftPickupMotor = new WPI_TalonSRX(RobotMap.leftPickupMotor);
 		this.wristMotor = new WPI_TalonSRX(RobotMap.wristMotor);
 
-		compressor = new Compressor();
-		handRotator = new DoubleSolenoid(RobotMap.handRotatorSolenoidChannelIn, RobotMap.handRotatorSolenoidChannelOut);
+		compressor = new Compressor(RobotMap.pcmID);
+		compressor.start();
+		handRotator = new DoubleSolenoid(RobotMap.pcmID, RobotMap.handRotatorSolenoidChannelIn,
+				RobotMap.handRotatorSolenoidChannelOut);
 
-		rightPickupMotor.setInverted(true);
+		rightPickupMotor.setInverted(false);
 		leftPickupMotor.setInverted(false);
 		compressor.setClosedLoopControl(true);
-		
+
 		wristMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		wristMotor.setSensorPhase(false);
+		wristMotor.setSensorPhase(true);
 		wristMotor.setSelectedSensorPosition(0, 0, 0);
 	}
 	// Put methods for controlling this subsystem
@@ -53,13 +55,13 @@ public class Hand extends Subsystem {
 	public double getEncoderVelocity() {
 		return wristMotor.getSelectedSensorVelocity(0);
 	}
-	
+
 	public void open() {
-		handRotator.set(DoubleSolenoid.Value.kForward);
+		handRotator.set(DoubleSolenoid.Value.kReverse);
 	}
 
 	public void close() {
-		handRotator.set(DoubleSolenoid.Value.kReverse);
+		handRotator.set(DoubleSolenoid.Value.kForward);
 	}
 
 	public void die() {
@@ -102,9 +104,8 @@ public class Hand extends Subsystem {
 	 * 
 	 * @return hand angle relative to ground in radians
 	 */
-	public double getAngle()
-	{
-		return Robot.arm.getAngle() + Math.toRadians(getEncoderPosition() * 360 / 4096 + startingAngle);
+	public double getAngle() {
+		return Robot.arm.getAngle() + Math.toRadians(getEncoderPosition() * 360 / 4096 * gearReduction + startingAngle);
 	}
-	
+
 }
