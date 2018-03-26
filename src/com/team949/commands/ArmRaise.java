@@ -2,6 +2,7 @@ package com.team949.commands;
 
 import com.team949.Robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -12,14 +13,18 @@ public class ArmRaise extends Command {
 	// TODO: Tune
 	private final double kArmRaiseMax = 0.5;
 	private final double kArmUpStall = 0.05;
+	private double startTime;
 
 	public ArmRaise() {
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
+		requires(Robot.arm);
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
+		Robot.arm.servoOut(Robot.arm.servoStart);
+		startTime = Timer.getFPGATimestamp();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -34,11 +39,13 @@ public class ArmRaise extends Command {
 		// out = kArmUpStall;
 		out = Math.cos(Robot.arm.getAngle());
 		if (Robot.arm.getAngle() > Math.toRadians(45)) {
-			out *= 0.8;
+			out *= 0.6;
 			out += 0.1;
 		}
 		if (Robot.arm.getAngle() > Math.toRadians(85))
 			out = kArmUpStall;
+		if (Timer.getFPGATimestamp() < startTime + 0.5)
+			out = 0;
 		Robot.arm.move(out);
 	}
 

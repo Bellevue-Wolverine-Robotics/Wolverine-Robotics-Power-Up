@@ -7,6 +7,7 @@ import com.team949.RobotMap;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -17,7 +18,10 @@ public class Arm extends Subsystem {
 	private double gearReduction = 30. / 54 * 1 / 2;
 	// Initialize your subsystem here
 	private WPI_TalonSRX armMotor;
+	private Servo servo = new Servo(0);
 	public static final double startingAngle = -50;
+
+	public double servoStart;
 
 	public Arm() {
 		armMotor = new WPI_TalonSRX(RobotMap.armMotor);
@@ -25,6 +29,15 @@ public class Arm extends Subsystem {
 		armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		armMotor.setSensorPhase(false);
 		armMotor.setSelectedSensorPosition(0, 0, 0);
+		servoStart = servoAngle();
+	}
+
+	public double servoAngle() {
+		return servo.getAngle();
+	}
+
+	public void servoOut(double deg) {
+		servo.setAngle(deg);
 	}
 
 	public void initDefaultCommand() {

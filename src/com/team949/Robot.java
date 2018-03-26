@@ -20,6 +20,7 @@ import com.team949.auto.HardMoveForward;
 import com.team949.auto.HardTurn;
 import com.team949.commands.ArmLower;
 import com.team949.commands.ArmRaise;
+import com.team949.commands.DelayedShoot;
 import com.team949.commands.HandLower;
 import com.team949.commands.HandStow;
 import com.team949.commands.ShitForward;
@@ -57,13 +58,12 @@ public class Robot extends TimedRobot {
 
 		UsbCamera driveCamera = CameraServer.getInstance().startAutomaticCapture(1);
 
-		driveCamera.setFPS(20);
-		driveCamera.setResolution(320, 240);
+		driveCamera.setFPS(15);
+		driveCamera.setResolution(160, 120);
 
-		// UsbCamera armCamera =
-		// CameraServer.getInstance().startAutomaticCapture(1);
-		// armCamera.setFPS(20);
-		// armCamera.setResolution(320, 240);
+		UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture(0);
+		armCamera.setFPS(15);
+		armCamera.setResolution(160, 120);
 
 		this.startingPositionChooser.addDefault("Left", 'L');
 		this.startingPositionChooser.addObject("Middle", 'M');
@@ -128,7 +128,8 @@ public class Robot extends TimedRobot {
 		// }
 		// schedule the autonomous command (example)
 
-		autonomousCommand = new ShitForward(4);
+		// autonomousCommand = new ShitForward(4);
+		autonomousCommand = new HardMoveForward(4 * 12);
 		if (autonomousCommand != null)
 			autonomousCommand.start();
 	}
@@ -186,6 +187,7 @@ public class Robot extends TimedRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
+
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
 	}
@@ -199,18 +201,20 @@ public class Robot extends TimedRobot {
 	 * This function is called periodically during operator control
 	 */
 	private boolean wristManual = false, armManual = false;
-	private Command armL = new ArmLower(), armR = new ArmRaise(), wristStow = new HandStow();
+	private Command armL = new ArmLower(), armR = new ArmRaise(), wristStow = new HandStow(),
+			shoot = new DelayedShoot(0.5, -0.5, 1);
 
 	private final static double Y_THRESHOLD = 0.3;
-	private final static double Z_THRESHOLD = 0.5;
+	private final static double Z_THRESHOLD = 0.3;
 	private final static double H_THRESHOLD = 0.3;
 
 	private final static double Y_NERF = 1;
 	private static double Z_NERF = 0.8;
-	private final static double H_NERF = 0.7;
+	private final static double H_NERF = 0.4;
 
 	@Override
 	public void teleopPeriodic() {
+		System.out.println(arm.servoAngle());
 		SmartDashboard.putNumber("ArmAngle", Math.toDegrees(arm.getAngle()));
 		SmartDashboard.putNumber("WristAngle", Math.toDegrees(hand.getAngle()));
 		SmartDashboard.putNumber("PosL", driveTrain.getLeftPosition());
@@ -232,7 +236,8 @@ public class Robot extends TimedRobot {
 			Z_NERF = 0.5;
 		if (drive.getRawButtonPressed(8))
 			Z_NERF = 0.8;
-		if (drive.getRawButtonPressed(10)) {
+		if (drive.getRawButtonPressed(10) || drive.getRawButtonPressed(3) || drive.getRawButtonPressed(4)
+				|| drive.getRawButtonPressed(6)) {
 			armL.cancel();
 			armR.cancel();
 			armManual = true;
@@ -249,9 +254,20 @@ public class Robot extends TimedRobot {
 			armL.cancel();
 			armR.start();
 		}
-		if (armManual)
-			// arm.move(drive.getThrottle());
-			arm.move(0);
+
+		if (drive.getRawButton(4))
+			climber.setMotors(1);
+		else
+			climber.setMotors(0);
+		if (armManual) {
+			if (drive.getRawButton(6))
+				arm.move(-1);
+			else if (drive.getRawButton(3))
+				// arm.move(drive.getThrottle());
+				arm.move(0.3);
+			else
+				arm.move(0);
+		}
 		// System.out.println(yInput * Math.cos(arm.getAngle()));
 
 		// operator stick
@@ -275,12 +291,20 @@ public class Robot extends TimedRobot {
 		if (op.getRawButtonPressed(12))
 			hand.close();
 		// shoot
-		if (op.getRawButton(2))
+		if (op.getRawButton(2)) {
+			shoot.cancel();
 			hand.setIntake(0.8);
-		else if (op.getRawButton(1))
+		} else if (op.getRawButton(1)) {
+			shoot.cancel();
 			hand.setIntake(-1);
-		else
+		} else if (op.getRawButtonPressed(3)) {
+			hand.open();
+			shoot.start();
+
+		}
+		if (op.getRawButtonReleased(1) || op.getRawButtonReleased(2)) {
 			hand.setIntake(0);
+		}
 		Scheduler.getInstance().run();
 	}
 
