@@ -152,7 +152,6 @@ public class DriveTrain extends Subsystem {
 		}
 
 	}
-
 	public boolean angleWithinTolerance(double targetAngle) {
 		final double tolerance = 3.0;
 		DriverStation.reportWarning("" + g.getAngle(), false);
