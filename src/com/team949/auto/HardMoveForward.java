@@ -25,19 +25,19 @@ public class HardMoveForward extends Command {
 	protected void initialize() {
 		initL = drive.getLeftPosition();
 		initR = drive.getRightPosition();
-
+		Robot.driveTrain.startPID();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
 		double l = getLeftTarget(drive.getLeftPosition() - initL), r = getRightTarget(drive.getRightPosition() - initR);
-		if (l != Double.NaN && r != Double.NaN)
+		if (!Double.isNaN(l + r))
 			drive.setVelocity(getLeftTarget(l), getRightTarget(r));
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return drive.getLeftPosition() > initL + distance || drive.getRightPosition() > initR + distance;
+		return drive.getLeftPosition() > initL + distance && drive.getRightPosition() > initR + distance;
 	}
 
 	// Called once after isFinished returns true
@@ -50,8 +50,8 @@ public class HardMoveForward extends Command {
 	protected void interrupted() {
 	}
 
-	private final double acc = 40 * 1, T = 0.02, dec = 40 * 2, v = 2 * 40;// in
-																			// inches
+	private final double acc = 40 * 1, T = 0.02, dec = 40 * 0.5, v = 40 * 0.25;// in
+																				// inches
 
 	private double getLeftTarget(double x) {
 		return Math.min(Math.min(acc * T + Robot.driveTrain.getLeftVelocity(), Math.sqrt(2 * dec * (distance - x))), v);

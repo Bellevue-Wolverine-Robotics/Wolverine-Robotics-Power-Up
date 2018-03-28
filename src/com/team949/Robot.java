@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -24,6 +25,7 @@ import com.team949.commands.DelayedShoot;
 import com.team949.commands.HandLower;
 import com.team949.commands.HandStow;
 import com.team949.commands.ShitForward;
+import com.team949.commands.Test;
 import com.team949.subsystems.Arm;
 import com.team949.subsystems.Climber;
 import com.team949.subsystems.DriveTrain;
@@ -128,11 +130,17 @@ public class Robot extends TimedRobot {
 		// }
 		// schedule the autonomous command (example)
 
-		// autonomousCommand = new ShitForward(4);
-		autonomousCommand = new HardMoveForward(4 * 12);
-		if (autonomousCommand != null)
-			autonomousCommand.start();
+		// // autonomousCommand = new ShitForward(4);
+		// autonomousCommand = new HardMoveForward(4 * 12);
+		// if (autonomousCommand != null)
+		// autonomousCommand.start();
+		c = new CommandGroup();
+		for (double i = 0; i <= 1; i += 0.01)
+			c.addSequential(new Test(0.2, i));
+		c.start();
 	}
+
+	private CommandGroup c;
 
 	/*
 	 * private Command autonomousSwitchLogic(char startingPosition, String
@@ -178,6 +186,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("PosR", driveTrain.getRightPosition());
 		SmartDashboard.putNumber("VelL", driveTrain.getLeftVelocity());
 		SmartDashboard.putNumber("VelR", driveTrain.getRightVelocity());
+
 		Scheduler.getInstance().run();
 	}
 
@@ -214,7 +223,6 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		System.out.println(arm.servoAngle());
 		SmartDashboard.putNumber("ArmAngle", Math.toDegrees(arm.getAngle()));
 		SmartDashboard.putNumber("WristAngle", Math.toDegrees(hand.getAngle()));
 		SmartDashboard.putNumber("PosL", driveTrain.getLeftPosition());

@@ -81,13 +81,13 @@ public class DriveTrain extends Subsystem {
 
 	// kd not implemented
 	/* TODO: measure Kv */
-	private final double kp = 10. / 40, ki = 0.01 / 50, kd = 0, kv = 1. / 30;
+	private final double kp = 10. / 40, ki = 0.3 / 50, kd = 0. / 40, kv = 1. / 30;
 	private double accL = 0, accR = 0;// accumulation
 	private double prevT = 0, prevErrL = 0, prevErrR = 0;
 
 	public void startPID() {
-		accL = 0.0;
-		accR = 0.0;
+		accL = 0.05;
+		accR = 0.05;
 		prevT = Timer.getFPGATimestamp();
 	}
 
@@ -105,7 +105,9 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void tank(double leftMoveValue, double rightMoveValue) {
-		this.drive.tankDrive(leftMoveValue, rightMoveValue * 1);
+		// this.drive.tankDrive(leftMoveValue, rightMoveValue * 0.97);
+		this.drive.tankDrive(leftMoveValue, Math.abs(rightMoveValue) < 0.04 ? 0
+				: ((Math.abs(rightMoveValue) - 0.04) * Math.signum(rightMoveValue)));
 	}
 
 	public void stop() {
