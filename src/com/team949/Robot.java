@@ -22,10 +22,12 @@ import com.team949.auto.HardTurn;
 import com.team949.commands.ArmLower;
 import com.team949.commands.ArmRaise;
 import com.team949.commands.DelayedShoot;
+import com.team949.commands.FollowTrajectory;
 import com.team949.commands.HandLower;
 import com.team949.commands.HandStow;
 import com.team949.commands.ShitForward;
 import com.team949.commands.Test;
+import com.team949.paths.ThreeFeet;
 import com.team949.subsystems.Arm;
 import com.team949.subsystems.Climber;
 import com.team949.subsystems.DriveTrain;
@@ -134,10 +136,13 @@ public class Robot extends TimedRobot {
 		// autonomousCommand = new HardMoveForward(4 * 12);
 		// if (autonomousCommand != null)
 		// autonomousCommand.start();
-		c = new CommandGroup();
-		for (double i = 0; i <= 1; i += 0.01)
-			c.addSequential(new Test(0.2, i));
-		c.start();
+//		c = new CommandGroup();
+//		for (double i = 0; i <= 1; i += 0.01)
+//			c.addSequential(new Test(0.2, i));
+//		c.start();
+		//autonomousCommand;
+		FollowTrajectory traj = new FollowTrajectory(new ThreeFeet());
+		autonomousCommand = traj;
 	}
 
 	private CommandGroup c;

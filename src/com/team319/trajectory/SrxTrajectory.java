@@ -17,6 +17,12 @@ public class SrxTrajectory {
 		rightProfile = new SrxMotionProfile((JSONObject) json.get("right"));
 	}
 
+	public SrxTrajectory() {
+		// TODO Auto-generated constructor stub
+//		leftProfile and rightProfile are modified later
+//		(generated trajectories extend this class and then modify the fields directly.)
+	}
+
 	public JSONObject toJson(){
 		JSONObject trajectory = new JSONObject();
 		trajectory.put("left", leftProfile.toJson());
