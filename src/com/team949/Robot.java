@@ -136,11 +136,11 @@ public class Robot extends TimedRobot {
 		// autonomousCommand = new HardMoveForward(4 * 12);
 		// if (autonomousCommand != null)
 		// autonomousCommand.start();
-//		c = new CommandGroup();
-//		for (double i = 0; i <= 1; i += 0.01)
-//			c.addSequential(new Test(0.2, i));
-//		c.start();
-		//autonomousCommand;
+		// c = new CommandGroup();
+		// for (double i = 0; i <= 1; i += 0.01)
+		// c.addSequential(new Test(0.2, i));
+		// c.start();
+		// autonomousCommand;
 		FollowTrajectory traj = new FollowTrajectory(new ThreeFeet());
 		autonomousCommand = traj;
 	}
@@ -249,8 +249,7 @@ public class Robot extends TimedRobot {
 			Z_NERF = 0.5;
 		if (drive.getRawButtonPressed(8))
 			Z_NERF = 0.8;
-		if (drive.getRawButtonPressed(10) || drive.getRawButtonPressed(3) || drive.getRawButtonPressed(4)
-				|| drive.getRawButtonPressed(6)) {
+		if (drive.getRawButtonPressed(10) || drive.getRawButtonPressed(6)) {
 			armL.cancel();
 			armR.cancel();
 			armManual = true;
@@ -268,14 +267,14 @@ public class Robot extends TimedRobot {
 			armR.start();
 		}
 
-		if (drive.getRawButton(4))
-			climber.setMotors(1);
-		else
-			climber.setMotors(0);
+		// if (drive.getRawButton(4))
+		// climber.setMotors(1);
+		// else
+		// climber.setMotors(0);
 		if (armManual) {
-			if (drive.getRawButton(6))
-				arm.move(-1);
-			else if (drive.getRawButton(3))
+			// if (drive.getRawButton(6))
+			// arm.move(-1);
+			if (drive.getRawButton(3))
 				// arm.move(drive.getThrottle());
 				arm.move(0.3);
 			else
