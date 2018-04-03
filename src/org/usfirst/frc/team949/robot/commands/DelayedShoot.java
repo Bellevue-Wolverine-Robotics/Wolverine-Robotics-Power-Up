@@ -1,39 +1,44 @@
-package com.team949.auto;
+package com.team949.commands;
 
 import com.team949.Robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.TimedCommand;
 
 /**
  *
  */
-public class HardArmMove extends TimedCommand {
+public class DelayedShoot extends TimedCommand {
+	private double start, wait, power;
 
-	private double moveValue;
-	
-	public HardArmMove(double timeout, double moveValue) {
+	public DelayedShoot(double wait, double power, double timeout) {
 		super(timeout);
+		this.wait = wait;
+		this.power = power;
 		// Use requires() here to declare subsystem dependencies
-		requires(Robot.arm);
-		this.moveValue = moveValue;
+		// eg. requires(chassis);
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.arm.move(moveValue);
+		start = Timer.getFPGATimestamp();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
+		if (wait < Timer.getFPGATimestamp() - start)
+			Robot.hand.setIntake(power);
 	}
 
 	// Called once after timeout
 	protected void end() {
-		Robot.arm.move(0.0);
+		Robot.hand.setIntake(0);
+		Robot.hand.close();
 	}
 
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
+		Robot.hand.setIntake(0);
 	}
 }

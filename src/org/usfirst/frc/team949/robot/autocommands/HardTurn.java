@@ -1,6 +1,6 @@
-package org.usfirst.frc.team949.robot.autocommands;
+package com.team949.auto;
 
-import org.usfirst.frc.team949.robot.Robot;
+import com.team949.Robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.TimedCommand;
@@ -21,11 +21,12 @@ public class HardTurn extends TimedCommand {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
+		System.out.println(targetAngle);
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		Robot.driveTrain.gyroPTurn(targetAngle);
+		Robot.driveTrain.arcadeNoConstants(0.0, Robot.driveTrain.gyroPReturn(targetAngle));
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
