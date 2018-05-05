@@ -22,15 +22,26 @@ public class ClimberControl extends Command {
     protected void execute() {
     	if(Robot.oi.isOperatorButtonDown(8)) // Up
     	{
-    		Robot.climber.setBothMotors(1.0);
+    		Robot.climber.setClimbMotor(-1.0);
     	}
     	else if(Robot.oi.isOperatorButtonDown(7)) // Down 
     	{
-    		Robot.climber.setBothMotors(-1.0);
+    		Robot.climber.setClimbMotor(1.0);
     	}
     	else 
     	{
-    		Robot.climber.setBothMotors(0.0);
+    		Robot.climber.setClimbMotor(0.0);
+    	}
+    	
+    	
+    	// Servo Hook logic
+    	if(Robot.oi.isOperatorButtonDown(4)) // Release
+    	{
+    		Robot.climber.releaseHook();
+    	}
+    	else if(Robot.oi.isOperatorButtonDown(6)) // Retract //DONT THINK WE NEED THIS
+    	{
+    		Robot.climber.lockHook();
     	}
     }
 

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 public class PickupControl extends Command {
 
 	private final static double Z_THRESHOLD = 0.9;
-	private final static double MULTIPLIER = 0.5;
+	private final static double WRIST_MULTIPLIER = 0.5;
 
 	public PickupControl() {
 		// Use requires() here to declare subsystem dependencies
@@ -34,23 +34,40 @@ public class PickupControl extends Command {
 		if (Robot.oi.isOperatorButtonDown(12)) // Out
 		{
 			Robot.pickup.setBothMotors(-1.0);
+		} else if (Robot.oi.isOperatorButtonDown(2)) // slow out
+		{
+			Robot.pickup.setBothMotors(-.9);
 		} else if (Robot.oi.isOperatorButtonDown(11)) // In
 		{
 			Robot.pickup.setBothMotors(1.0);
 		} else if (Robot.oi.isOperatorButtonDown(10)) // Right
 		{
-			Robot.pickup.setRotateBothMotors(0.5);
+			Robot.pickup.setRotateBothMotors(0.7);
 		} else if (Robot.oi.isOperatorButtonDown(9)) // Left
 		{
-			Robot.pickup.setRotateBothMotors(-0.5);
+			Robot.pickup.setRotateBothMotors(-0.7);
 		} else {
 			Robot.pickup.stop();
 		}
 
 		// Wrist Logic (Down)
 		double zInput = Robot.oi.getOperatorZ();
-		zInput = (Math.abs(zInput) < Z_THRESHOLD ? 0 : (Math.signum(zInput) * ((Math.abs(zInput)-Z_THRESHOLD) / (1 - Z_THRESHOLD))));
-		Robot.pickup.setWrist(MULTIPLIER * zInput);
+		zInput = (Math.abs(zInput) < Z_THRESHOLD ? 0
+				: (Math.signum(zInput) * ((Math.abs(zInput) - Z_THRESHOLD) / (1 - Z_THRESHOLD))));
+		Robot.pickup.setWrist(WRIST_MULTIPLIER * zInput);
+
+		// Grab logic
+//		if (Robot.oi.operatorStick.getRawButtonPressed(1)) {
+//			Robot.pickup.extend();
+//		}
+//		if (Robot.oi.operatorStick.getRawButtonPressed(2)) {
+//			Robot.pickup.unextend();
+//
+//		}
+//		if (Robot.oi.operatorStick.getRawButtonReleased(1) || Robot.oi.operatorStick.getRawButtonReleased(2)) {
+//			Robot.pickup.die();
+//		}
+
 	}
 
 	// Make this return true when this Command no longer needs to run execute()

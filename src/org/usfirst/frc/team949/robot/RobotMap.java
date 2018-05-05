@@ -11,10 +11,10 @@ public class RobotMap {
 
 	// MOTORS
 	// DriveTrain
-	public final static int leftMaster = 1;
-	public final static int leftSlave = 0;
-	public final static int rigthMaster = 3;
-	public final static int rightSlave = 2;
+	public final static int leftDriveMotor1 = 3;
+	public final static int leftDriveMotor2 = 2;
+	public final static int rightDriveMotor1 = 1;
+	public final static int rightDriveMotor2 = 0;
 
 	// Pickup
 	public final static int leftPickupMotor = 6;
@@ -29,5 +29,11 @@ public class RobotMap {
 	public final static int climberMotor2 = 5;
 
 	// PNEUMATICS
+	public final static int handRotatorSolenoidChannelIn = 0;
+	public final static int handRotatorSolenoidChannelOut = 1;
+	public final static int pcmID = 61;
+
+	// SERVO
+	public final static int hookLockServo = 0;
 
 }

@@ -6,6 +6,9 @@ public class Constants {
 	public final static double wheelbase = 23.5;
 	public final static int wheel_diameter = 6;
 	
+	public static final double hand_intakeSpeed = 1.0;
+	public static final double hand_shootSpeed = 1.0;
+	
 	// TODO: Why is not static?
 	public double in2cm(double in)
 	{
